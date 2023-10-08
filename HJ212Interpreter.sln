@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B621DECE-633A-4BB5-A3AB-B2724984C250}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HJ212Interpreter", "src\HJ212Interpreter\HJ212Interpreter.csproj", "{69A36273-038A-4F36-8BFF-BF45B00E9DAF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{69A36273-038A-4F36-8BFF-BF45B00E9DAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69A36273-038A-4F36-8BFF-BF45B00E9DAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69A36273-038A-4F36-8BFF-BF45B00E9DAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69A36273-038A-4F36-8BFF-BF45B00E9DAF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{69A36273-038A-4F36-8BFF-BF45B00E9DAF} = {B621DECE-633A-4BB5-A3AB-B2724984C250}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E78916A4-BFE4-4F80-B35C-C85F4A87C813}
+	EndGlobalSection
+EndGlobal

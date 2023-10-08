@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<LangVersion>11</LangVersion>
+	</PropertyGroup>
+	
+	<!--nuget metadata-->
+	<PropertyGroup>
+		<PackageId>HJ212Interpreter</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>Roooyu</Authors>
+		<Company></Company>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Title>HJ212Interpreter</Title>
+		<Description>支持HJ212协议ASCII报文与对象的相互转换</Description>
+		<PackageReleaseNotes>仅支持HJ212-2017协议版本（暂时）</PackageReleaseNotes>
+		<PackageTags>C#;CSharp;HJ;HJ212;环保;环境保护;</PackageTags>
+		<RepositoryUrl>https://github.com/liruoyu2008/HJ212Interpreter</RepositoryUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageProjectUrl>https://github.com/liruoyu2008/HJ212Interpreter</PackageProjectUrl>
+		<Copyright>Copyright © 2023</Copyright>
+	</PropertyGroup>
+	<ItemGroup>
+	  <None Include="..\..\media\icon.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	  <None Include="..\..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
+
+</Project>
