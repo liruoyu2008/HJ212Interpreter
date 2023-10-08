@@ -38,4 +38,3 @@ jobs:
         run: |
           dotnet build src/HJ212Interpreter/HJ212Interpreter.csproj --configuration release
           nuget push src/HJ212Interpreter/bin/release/HJ212Interpreter.${{ steps.getversion.outputs.version }}.nupkg -Source https://api.nuget.org/v3/index.json -SkipDuplicate
-          nuget push src/HJ212Interpreter/bin/release/HJ212Interpreter.${{ steps.getversion.outputs.version }}.nupkg -ApiKey ${{ secrets.GITHUB_TOKEN }} -Source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json -SkipDuplicate
