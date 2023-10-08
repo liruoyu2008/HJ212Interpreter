@@ -1,4 +1,5 @@
 name: release
+run-name: Build and Publish-to-Nuget
 
 on:
   push:
@@ -9,11 +10,11 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@main
+      - uses: actions/checkout@v4
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@main
+        uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.x
+          dotnet-version: 6.0.x
       - name: Build library (.net core)
         run: dotnet build src/HJ212Interpreter/HJ212Interpreter.csproj --configuration release
 
@@ -21,7 +22,14 @@ jobs:
     needs: [build]
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@main
+      - uses: actions/checkout@v4
+      - name: Get Version
+        id: getversion
+        shell: pwsh
+        run: |
+          $xml = [xml](Get-Content ./src/HJ212Interpreter/HJ212Interpreter.csproj)
+          $version = $xml.Project.PropertyGroup[1].Version
+          echo "::set-output name=version::$version"
       - name: Publish package
         uses: nuget/setup-nuget@v1
         with:
@@ -29,4 +37,4 @@ jobs:
       - name: Publish NuGet
         run: |
           dotnet build src/HJ212Interpreter/HJ212Interpreter.csproj --configuration release
-          nuget push src/HJ212Interpreter/bin/release/HJ212Interpreter.6.0.0.nupkg -Source https://api.nuget.org/v3/index.json -SkipDuplicate
+          nuget push src/HJ212Interpreter/bin/release/HJ212Interpreter.${{ steps.getversion.outputs.version }}.nupkg -Source https://api.nuget.org/v3/index.json -SkipDuplicate
