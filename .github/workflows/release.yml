@@ -1,0 +1,32 @@
+name: release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@main
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@main
+        with:
+          dotnet-version: 3.1.x
+      - name: Build library (.net core)
+        run: dotnet build src/HJ212Interpreter/HJ212Interpreter.csproj --configuration release
+
+  publish:
+    needs: [build]
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@main
+      - name: Publish package
+        uses: nuget/setup-nuget@v1
+        with:
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
+      - name: Publish NuGet
+        run: |
+          dotnet build src/HJ212Interpreter/HJ212Interpreter.csproj --configuration release
+          nuget push src/HJ212Interpreter/bin/release/HJ212Interpreter.6.0.0.nupkg -Source https://api.nuget.org/v3/index.json -SkipDuplicate
