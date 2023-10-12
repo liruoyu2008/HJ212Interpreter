@@ -8,7 +8,7 @@
 	<!--nuget metadata-->
 	<PropertyGroup>
 		<PackageId>HJ212Interpreter</PackageId>
-		<Version>1.1.0</Version>
+		<Version>1.2.0</Version>
 		<Authors>Roooyu</Authors>
 		<Company>Roooyu</Company>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>

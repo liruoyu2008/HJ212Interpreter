@@ -44,7 +44,7 @@ namespace HJ212Interpreter.v2017
         /// <summary>
         /// 系统编码
         /// </summary>
-        public SystemType ST { get; set; }
+        public string ST { get; set; }
 
         /// <summary>
         /// 访问密码
@@ -80,7 +80,7 @@ namespace HJ212Interpreter.v2017
         #region 构建、打包、解析
 
         // 数据段基础正则格式
-        private static Regex _pattern = new("^QN=([0-9]{17});ST=([0-9]{2});CN=([0-9]{4});PW=([0-9a-zA-Z]{0,6});MN=([0-9a-zA-Z]{1,24});Flag=([0-9]{1,4});(PNUM=([0-9]{1,4});PNO=([0-9]{1,4});)?CP=&&(.*)&&$");
+        private static Regex _pattern = new("^QN=([0-9]{17});ST=([a-zA-Z0-9]{2});CN=([0-9]{4});PW=([0-9a-zA-Z]{0,6});MN=([0-9a-zA-Z]{1,24});Flag=([0-9]{1,4});(PNUM=([0-9]{1,4});PNO=([0-9]{1,4});)?CP=&&(.*)&&$");
 
         /// <summary>
         /// 构建数据段
@@ -92,25 +92,25 @@ namespace HJ212Interpreter.v2017
         /// <param name="mn">设备唯一标识</param>
         /// <param name="needResponse">是否需要应答</param>
         /// <param name="cp">指令参数字符串（不含开始与结束符&&）</param>
-        public Command(SourceType sourceType, SystemType st, int cn, string pw, string mn, bool needResponse)
+        public Command(SourceType sourceType, string st, int cn, string pw, string mn, bool needResponse)
             : this(GetCommandType(sourceType, cn), DateTime.Now.ToString("yyyyMMddHHmmssfff"),
                  st, cn, pw, mn, new Flag(needResponse), 0, 0)
         { }
 
-        private Command(CommandType commandType, SystemType st, int cn, string pw, string mn, Flag flag, int pnum, int pno)
+        private Command(CommandType commandType, string st, int cn, string pw, string mn, Flag flag, int pnum, int pno)
             : this(commandType, DateTime.Now.ToString("yyyyMMddHHmmssfff"), st, cn, pw, mn, flag, pnum, pno)
         { }
 
-        private Command(SourceType sourceType, string qn, SystemType st, int cn, string pw, string mn, string flag, string pnum, string pno)
+        private Command(SourceType sourceType, string qn, string st, int cn, string pw, string mn, string flag, string pnum, string pno)
             : this(GetCommandType(sourceType, cn), qn, st, cn, pw, mn,
                 Flag.Parse(flag), int.TryParse(pnum, out int a) ? a : 0, int.TryParse(pno, out int b) ? b : 0)
         { }
 
-        private Command(CommandType ct, string qn, SystemType st, int cn, string pw, string mn, Flag flag)
+        private Command(CommandType ct, string qn, string st, int cn, string pw, string mn, Flag flag)
             : this(ct, qn, st, cn, pw, mn, flag, 0, 0)
         { }
 
-        private Command(CommandType commandType, string qn, SystemType st, int cn, string pw, string mn, Flag flag, int pnum, int pno)
+        private Command(CommandType commandType, string qn, string st, int cn, string pw, string mn, Flag flag, int pnum, int pno)
         {
             CT = commandType;
 
@@ -131,8 +131,8 @@ namespace HJ212Interpreter.v2017
         public override string ToString()
         {
             var msg = PNUM == 0
-                ? $"QN={QN};ST={(int)ST};CN={CN};PW={PW};MN={MN};Flag={Flag};CP=&&{CP}&&"
-                : $"QN={QN};ST={(int)ST};CN={CN};PW={PW};MN={MN};Flag={Flag};PNUM={PNUM};PNO={PNO};CP=&&{CP}&&";
+                ? $"QN={QN};ST={ST};CN={CN};PW={PW};MN={MN};Flag={Flag};CP=&&{CP}&&"
+                : $"QN={QN};ST={ST};CN={CN};PW={PW};MN={MN};Flag={Flag};PNUM={PNUM};PNO={PNO};CP=&&{CP}&&";
             return msg;
         }
 
@@ -176,7 +176,7 @@ namespace HJ212Interpreter.v2017
             var cmd = new Command(
                 sourceType: sourceType,
                 qn: match.Groups[1].Value,
-                st: (SystemType)int.Parse(match.Groups[2].Value),
+                st: match.Groups[2].Value,
                 cn: int.Parse(match.Groups[3].Value),
                 pw: match.Groups[4].Value,
                 mn: match.Groups[5].Value,
@@ -226,8 +226,7 @@ namespace HJ212Interpreter.v2017
             var res = new Command[pnum];
             for (int i = 0; i < pnum; i++)
             {
-                res[i] = new Command(CT, ST, CN, PW, MN, new Flag(Flag.V, true, Flag.A), pnum, i + 1)
-                {
+                res[i] = new Command(CT, ST, CN, PW, MN, new Flag(Flag.V, true, Flag.A), pnum, i + 1) {
                     CPStr = cpstr.Substring(i * 916, Math.Min(cpstr.Length - i * 916, 916)),
                 };
             }
@@ -253,8 +252,7 @@ namespace HJ212Interpreter.v2017
                 builder.Append(cmds[i].CPStr);
             }
 
-            var res = new Command(cmds[0].CT, cmds[0].QN, cmds[0].ST, cmds[0].CN, cmds[0].PW, cmds[0].MN, new Flag(cmds[0].Flag.V, false, cmds[0].Flag.A))
-            {
+            var res = new Command(cmds[0].CT, cmds[0].QN, cmds[0].ST, cmds[0].CN, cmds[0].PW, cmds[0].MN, new Flag(cmds[0].Flag.V, false, cmds[0].Flag.A)) {
                 CP = CP.Parse(cmds[0].CN, cmds[0].CT, builder.ToString())
             };
             return res;
@@ -319,8 +317,7 @@ namespace HJ212Interpreter.v2017
         /// <returns></returns>
         public static CommandType GetCommandType(SourceType st, int cn)
         {
-            return cn switch
-            {
+            return cn switch {
                 // 初始化命令
                 1000 => CommandType.REQUEST,
                 >= 1000 and <= 1010 => CommandType.NONE,

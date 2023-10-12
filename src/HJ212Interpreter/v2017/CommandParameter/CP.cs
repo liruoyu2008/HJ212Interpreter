@@ -1,9 +1,9 @@
-﻿using HJ212Interpreter.v2017.CommandParameters.SubCommandParameter;
-using HJ212Interpreter.v2017.Enum;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using HJ212Interpreter.v2017.CommandParameters.SubCommandParameter;
+using HJ212Interpreter.v2017.Enum;
 
 namespace HJ212Interpreter.v2017.CommandParameters
 {
@@ -12,6 +12,44 @@ namespace HJ212Interpreter.v2017.CommandParameters
     /// </summary>
     public abstract class CP
     {
+        /// <summary>
+        /// 得到一个<属性名,属性值>字典,其中SubCP被处理为子字典<项名，<属性名，属性值>>.注意：值为null的属性会被排除在外
+        /// </summary>
+        /// <returns></returns>
+        public virtual Dictionary<string, object> ToDictionary()
+        {
+            var res = new Dictionary<string, object>();
+            var props = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (var prop in props)
+            {
+                var k = prop.Name.ValidateCP();
+                var v = prop.GetValue(this);
+                if (v == null)
+                {
+                    continue;
+                }
+
+                if (v is not List<SubCP>)
+                {
+                    res[k] = v;
+                }
+                else
+                {
+                    var list = v as List<SubCP>;
+                    foreach (var subCP in list)
+                    {
+                        var dic = subCP.ToDictionary();
+                        if (dic != null)
+                        {
+                            res[subCP.Name] = dic;
+                        }
+                    }
+                }
+            }
+
+            return res.Count == 0 ? null : res;
+        }
+
         /// <summary>
         /// 转换为指令参数字符串
         /// </summary>
@@ -39,15 +77,15 @@ namespace HJ212Interpreter.v2017.CommandParameters
                 // SubCP
                 else
                 {
-                    var dic = prop.GetValue(this) as Dictionary<string, SubCP>;
-                    if (dic == null)
+                    var list = prop.GetValue(this) as List<SubCP>;
+                    if (list == null)
                     {
                         continue;
                     }
 
-                    foreach (var k in dic)
+                    foreach (var k in list)
                     {
-                        var subCPStr = k.Value.ToString();
+                        var subCPStr = k.ToString();
                         if (subCPStr != null)
                         {
                             sb.Append($"{subCPStr};");
@@ -67,7 +105,7 @@ namespace HJ212Interpreter.v2017.CommandParameters
         public static T Parse<T>(string cpStr) where T : CP, new()
         {
             var cp = new T();
-            Dictionary<string, SubCP> subCPDic = new Dictionary<string, SubCP>();
+            List<SubCP> subCPDic = new List<SubCP>();
             var props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
             var list1 = cpStr.Split(';');
@@ -96,7 +134,7 @@ namespace HJ212Interpreter.v2017.CommandParameters
                     var subCP = SubCP.Parse(typeof(T), item);
                     if (subCP != null)
                     {
-                        subCPDic.Add(subCP.Name, subCP);
+                        subCPDic.Add(subCP);
                     }
                 }
             }

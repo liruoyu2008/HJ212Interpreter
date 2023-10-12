@@ -24,6 +24,6 @@ namespace HJ212Interpreter.v2017.CommandParameters
         /// <summary>
         /// 数据
         /// </summary>
-        public Dictionary<string, SubCP> SubCP { get; set; }
+        public List<SubCP> SubCP { get; set; }
     }
 }

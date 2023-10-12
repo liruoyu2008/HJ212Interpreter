@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -14,7 +15,6 @@ namespace HJ212Interpreter.v2017.CommandParameters.SubCommandParameter
         /// 子项名称. 非内建字段
         /// </summary>
         public string Name { get; private set; }
-
 
         /// <summary>
         /// 构建子项
@@ -32,6 +32,27 @@ namespace HJ212Interpreter.v2017.CommandParameters.SubCommandParameter
             }
 
             Name = name;
+        }
+
+        /// <summary>
+        /// 将SubCP转换为<属性名,属性值>键值对字典。注意：值为null的属性会被排除在外,若字典为空，则返回null
+        /// </summary>
+        /// <returns></returns>
+        public virtual Dictionary<string, object> ToDictionary()
+        {
+            var res = new Dictionary<string, object>();
+            var props = GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(it => it.Name != "Name");
+            foreach (var prop in props)
+            {
+                var k = prop.Name;
+                var v = prop.GetValue(this);
+                if (v != null)
+                {
+                    res[k] = v;
+                }
+            }
+
+            return res.Count == 0 ? null : res;
         }
 
         /// <summary>
